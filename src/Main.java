@@ -71,7 +71,7 @@ public class Main {
             }
         }
 
-        System.out.print("Masukkan alamat absolut untuk gambar output: ");
+        System.out.print("Masukkan nama file untuk gambar output dalam (tanpa format .jpg): ");
         scanner.nextLine();
         String outputPath = scanner.nextLine();
 
@@ -90,6 +90,7 @@ public class Main {
         
         qt.reconstruct(processor.getOutputImage(), qt.getRoot());
 
+        outputPath = "../test/" + outputPath + ".jpg";
         if (!processor.saveImage(outputPath)) {
             System.out.println("Gagal menyimpan gambar output.");
             scanner.close();

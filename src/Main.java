@@ -1,6 +1,7 @@
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
@@ -75,6 +76,8 @@ public class Main {
 
         System.out.print("Masukkan alamat absolut untuk gambar output: ");
         String outputPath = scanner.nextLine();
+        String tempGifName = new File(outputPath).getName();
+        String gifName = tempGifName.contains(".") ? tempGifName.substring(0, tempGifName.lastIndexOf('.')) : tempGifName;
 
         System.out.print("Ingin menyimpan GIF proses kompresi? (y/n): ");
         String gifChoice = scanner.nextLine().trim().toLowerCase();
@@ -105,7 +108,7 @@ public class Main {
         }
         
         if (gifChoice.equals("y")) {
-            GifGenerator.generateGif("../test/frames", "../test/output.gif", 500);
+            GifGenerator.generateGif("../test/frames", "../test/" + gifName + ".gif", 500);
         }
         
         long originalSize = processor.getFileSize(inputPath);

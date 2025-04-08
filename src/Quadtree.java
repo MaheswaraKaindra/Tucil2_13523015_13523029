@@ -6,7 +6,7 @@ public class Quadtree {
     private QuadtreeNode root;
     private int nodeCount;
     private int maxDepth;
-
+    
     public enum ErrorMethod {
         VARIANCE, MAD, MAX_DIFF, ENTROPY
     }
@@ -30,45 +30,79 @@ public class Quadtree {
     }
 
     public void build(BufferedImage image, int x, int y, int width, int height,
-                      double threshold, int minSize, ErrorMethod method) {
+                  double threshold, int minSize, ErrorMethod method,
+                  ImageProcessor processor, boolean generateGIF) {
         nodeCount = 0;
         maxDepth = 0;
+
         root = buildRecursive(image, x, y, width, height, threshold, minSize, method, 1);
+
+        if (generateGIF) {
+            for (int d = 1; d <= maxDepth; d++) {
+                BufferedImage stepImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+                processor.setOutputImage(stepImage);
+                reconstructUntilDepth(stepImage, root, d, 1);
+
+                String filename = String.format("../test/frames/depth_%02d.png", d);
+                boolean saved = processor.saveImageFrame(filename, stepImage);
+                if (!saved) {
+                    System.out.println("Gagal menyimpan frame untuk depth " + d);
+                }
+            }
+        }
+    }
+
+
+    public void reconstructUntilDepth(BufferedImage output, QuadtreeNode node, int maxAllowedDepth, int currentDepth) {
+        if (node == null) return;
+    
+        if (node.isLeaf() || currentDepth >= maxAllowedDepth) {
+            Color fill = new Color(node.getAvgRed(), node.getAvgGreen(), node.getAvgBlue());
+            for (int i = node.getY(); i < node.getY() + node.getHeight(); i++) {
+                for (int j = node.getX(); j < node.getX() + node.getWidth(); j++) {
+                    output.setRGB(j, i, fill.getRGB());
+                }
+            }
+        } else {
+            for (QuadtreeNode child : node.getChildren()) {
+                reconstructUntilDepth(output, child, maxAllowedDepth, currentDepth + 1);
+            }
+        }
     }
 
     private QuadtreeNode buildRecursive(BufferedImage image, int x, int y, int width, int height,
-                                        double threshold, int minSize, ErrorMethod method, int currentDepth) {
-        nodeCount++;
-        if (currentDepth > maxDepth) maxDepth = currentDepth;
+                                    double threshold, int minSize, ErrorMethod method, int currentDepth) {
+    nodeCount++;
+    if (currentDepth > maxDepth) maxDepth = currentDepth;
 
-        double[] avg = new double[3]; // [avgRed, avgGreen, avgBlue]
-        double error = computeError(image, x, y, width, height, method, avg);
-        
-        QuadtreeNode node = new QuadtreeNode(x, y, width, height);
-        node.setAvgRed((int) avg[0]);
-        node.setAvgGreen((int) avg[1]);
-        node.setAvgBlue((int) avg[2]);
+    double[] avg = new double[3];
+    double error = computeError(image, x, y, width, height, method, avg);
 
-        int currentArea = width * height;
-        int childArea = (width / 2) * (height / 2);
-    
-        // Split the node if area conditions are met
-        if (error > threshold && currentArea > minSize && childArea >= minSize) {
-            node.setLeaf(false);
-            int halfW = width / 2;
-            int halfH = height / 2;
+    QuadtreeNode node = new QuadtreeNode(x, y, width, height);
+    node.setAvgRed((int) avg[0]);
+    node.setAvgGreen((int) avg[1]);
+    node.setAvgBlue((int) avg[2]);
 
-            QuadtreeNode[] children = new QuadtreeNode[4];
-            children[0] = buildRecursive(image, x, y, halfW, halfH, threshold, minSize, method, currentDepth + 1);
-            children[1] = buildRecursive(image, x + halfW, y, width - halfW, halfH, threshold, minSize, method, currentDepth + 1);
-            children[2] = buildRecursive(image, x, y + halfH, halfW, height - halfH, threshold, minSize, method, currentDepth + 1);
-            children[3] = buildRecursive(image, x + halfW, y + halfH, width - halfW, height - halfH, threshold, minSize, method, currentDepth + 1);
-            
-            node.setChildren(children);
-        }
-    
-        return node;
+    int currentArea = width * height;
+    int childArea = (width / 2) * (height / 2);
+
+    if (error > threshold && currentArea > minSize && childArea >= minSize) {
+        node.setLeaf(false);
+        int halfW = width / 2;
+        int halfH = height / 2;
+
+        QuadtreeNode[] children = new QuadtreeNode[4];
+        children[0] = buildRecursive(image, x, y, halfW, halfH, threshold, minSize, method, currentDepth + 1);
+        children[1] = buildRecursive(image, x + halfW, y, width - halfW, halfH, threshold, minSize, method, currentDepth + 1);
+        children[2] = buildRecursive(image, x, y + halfH, halfW, height - halfH, threshold, minSize, method, currentDepth + 1);
+        children[3] = buildRecursive(image, x + halfW, y + halfH, width - halfW, height - halfH, threshold, minSize, method, currentDepth + 1);
+
+        node.setChildren(children);
     }
+
+    return node;
+}
+
 
     private double computeError(BufferedImage image, int x, int y, int width, int height,
                                 ErrorMethod method, double[] avg) {

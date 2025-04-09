@@ -40,16 +40,22 @@ public class ImageProcessor {
         try {
             String format = path.substring(path.lastIndexOf('.') + 1).toLowerCase();
             if (!format.matches("png|jpg|jpeg")) {
-                format = "png"; // default to PNG if unknown format
+                format = "png";
             }
             return ImageIO.write(outputImage, format, new File(path));
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
     }
 
-    // Returns the file size (in bytes)
+    public boolean saveImageFrame(String path, BufferedImage image) {
+        try {
+            return ImageIO.write(image, "png", new File(path));
+        } catch (Exception e){
+            return false;
+        }
+    }
+
     public long getFileSize(String path) {
         File file = new File(path);
         return file.length();

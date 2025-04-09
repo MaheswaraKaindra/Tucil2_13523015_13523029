@@ -1,6 +1,7 @@
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
@@ -71,37 +72,52 @@ public class Main {
             }
         }
 
-        System.out.print("Masukkan alamat absolut untuk gambar output: ");
         scanner.nextLine();
-        String outputPath = scanner.nextLine();
 
+        System.out.print("Masukkan alamat absolut untuk gambar output: ");
+        String outputPath = scanner.nextLine();
+        String tempGifName = new File(outputPath).getName();
+        String gifName = tempGifName.contains(".") ? tempGifName.substring(0, tempGifName.lastIndexOf('.')) : tempGifName;
+
+        System.out.print("Ingin menyimpan GIF proses kompresi? (y/n): ");
+        String gifChoice = scanner.nextLine().trim().toLowerCase();
+        boolean generateGIF = gifChoice.equals("y");
+        
         Quadtree qt = new Quadtree();
         long startTime = System.nanoTime();
         Quadtree.ErrorMethod errorMethod = Quadtree.ErrorMethod.values()[methodChoice - 1];
+        
         qt.build(processor.getInputImage(), 0, 0, processor.getInputImage().getWidth(),
-                 processor.getInputImage().getHeight(), threshold, minBlockSize, errorMethod);
+        processor.getInputImage().getHeight(), threshold, minBlockSize,
+        errorMethod, processor, generateGIF);
+        
         long endTime = System.nanoTime();
         double executionTime = (endTime - startTime) / 1e9;
-
+        
         BufferedImage newOutput = new BufferedImage(processor.getInputImage().getWidth(),
-                                          processor.getInputImage().getHeight(),
-                                          processor.getInputImage().getType());
+        processor.getInputImage().getHeight(),
+        processor.getInputImage().getType());
         processor.setOutputImage(newOutput);
         
         qt.reconstruct(processor.getOutputImage(), qt.getRoot());
-
+        
         if (!processor.saveImage(outputPath)) {
             System.out.println("Gagal menyimpan gambar output.");
             scanner.close();
             return;
         }
-
+        
+        if (gifChoice.equals("y")) {
+            GifGenerator.generateGif("../test/frames", "../test/" + gifName + ".gif", 500);
+        }
+        
         long originalSize = processor.getFileSize(inputPath);
         long compressedSize = processor.getFileSize(outputPath);
         double compressionPercentage = 0.0;
         if (originalSize > 0)
-            compressionPercentage = (1.0 - (double) compressedSize / originalSize) * 100.0;
-
+        compressionPercentage = (1.0 - (double) compressedSize / originalSize) * 100.0;
+        
+        
         System.out.println("\n--- Statistik Kompresi ---");
         System.out.println("Waktu eksekusi: " + executionTime + " detik");
         System.out.println("Ukuran gambar sebelum: " + originalSize + " bytes");
@@ -109,7 +125,7 @@ public class Main {
         System.out.println("Persentase kompresi: " + compressionPercentage + " %");
         System.out.println("Kedalaman pohon: " + qt.getMaxDepth());
         System.out.println("Banyak simpul: " + qt.getNodeCount());
-
+        
         scanner.close();
     }
 }

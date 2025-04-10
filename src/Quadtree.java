@@ -35,13 +35,13 @@ public class Quadtree {
         nodeCount = 0;
         maxDepth = 0;
 
-        root = buildRecursive(image, x, y, width, height, threshold, minSize, method, 1);
+        root = buildRecursive(image, x, y, width, height, threshold, minSize, method, 0);
 
         if (generateGIF) {
-            for (int d = 1; d <= maxDepth; d++) {
+            for (int d = 0; d <= maxDepth; d++) {
                 BufferedImage stepImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
                 processor.setOutputImage(stepImage);
-                reconstructUntilDepth(stepImage, root, d, 1);
+                reconstructUntilDepth(stepImage, root, d, 0);
 
                 String filename = String.format("../test/frames/depth_%02d.png", d);
                 boolean saved = processor.saveImageFrame(filename, stepImage);

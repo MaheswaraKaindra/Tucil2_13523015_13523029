@@ -79,7 +79,7 @@ public class Main {
         while (!validMinBlockSizeInput){
             System.out.println();
             System.out.print("Masukkan ");
-            System.out.print(color("ukuran blok minimum", "\u001B[36m") + ": ");
+            System.out.print(color("ukuran blok minimum", "\u001B[31m") + ": ");
             try {
                 minBlockSize = scanner.nextInt();
                 if (minBlockSize > 0) {

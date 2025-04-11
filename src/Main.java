@@ -155,13 +155,17 @@ generateGIF = gifChoice.equals("y");
         compressionPercentage = (1.0 - (double) compressedSize / originalSize) * 100.0;
         
         
-        System.out.println("\n--- Statistik Kompresi ---");
-        System.out.println("Waktu eksekusi: " + executionTime + " detik");
-        System.out.println("Ukuran gambar sebelum: " + originalSize + " bytes");
-        System.out.println("Ukuran gambar sesudah: " + compressedSize + " bytes");
-        System.out.println("Persentase kompresi: " + compressionPercentage + " %");
-        System.out.println("Kedalaman pohon: " + qt.getMaxDepth());
-        System.out.println("Banyak simpul: " + qt.getNodeCount());
+        System.out.println();
+        System.out.println(color("╭────────────────────────────────────────────────────╮", "\u001B[34m"));
+        System.out.println(color("│", "\u001B[34m") + color("               Statistik Kompresi                   ", "\u001B[35m") + color("│", "\u001B[34m"));
+        System.out.println(color("╰────────────────────────────────────────────────────╯", "\u001B[34m"));
+
+        System.out.printf("%-28s : %s%n", "Waktu eksekusi", color(String.format("%.3f detik", executionTime), "\u001B[36m"));
+        System.out.printf("%-28s : %s%n", "Ukuran gambar sebelum", color(originalSize + " bytes", "\u001B[36m"));
+        System.out.printf("%-28s : %s%n", "Ukuran gambar sesudah", color(compressedSize + " bytes", "\u001B[36m"));
+        System.out.printf("%-28s : %s%n", "Persentase kompresi", color(String.format("%.2f %%", compressionPercentage), "\u001B[36m"));
+        System.out.printf("%-28s : %s%n", "Kedalaman pohon", color(String.valueOf(qt.getMaxDepth()), "\u001B[36m"));
+        System.out.printf("%-28s : %s%n", "Banyak simpul", color(String.valueOf(qt.getNodeCount()), "\u001B[36m"));
         
         scanner.close();
     }

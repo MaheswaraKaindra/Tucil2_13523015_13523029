@@ -145,7 +145,7 @@ generateGIF = gifChoice.equals("y");
         }
         
         if (gifChoice.equals("y")) {
-            GifGenerator.generateGif("../test/frames", "../test/" + gifName + ".gif", 500);
+            GifGenerator.generateGif("/test/frames", "/test/" + gifName + ".gif", 500);
         }
         
         long originalSize = processor.getFileSize(inputPath);

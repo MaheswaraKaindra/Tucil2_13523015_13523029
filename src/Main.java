@@ -6,34 +6,51 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println(color("╭────────────────────────────────────────────────────╮", "\u001B[34m"));
+        System.out.println(color("│", "\u001B[34m") + color("       Welcome to, Quadtree Image Compressor        ", "\u001B[35m") + color("│", "\u001B[34m"));
+        System.out.println(color("│", "\u001B[34m") + color("              A Project by Kaindra and Ho           ", "\u001B[36m") + color("│", "\u001B[34m"));
+        System.out.println(color("╰────────────────────────────────────────────────────╯", "\u001B[34m"));
+        System.out.println();
 
-        System.out.print("Masukkan alamat absolut gambar input: ");
+
+        System.out.print("Masukkan ");
+        System.out.print(color("alamat absolut", "\u001B[36m"));
+        System.out.print(" gambar: ");
         String inputPath = scanner.nextLine();
         ImageProcessor processor = new ImageProcessor();
         while (!processor.loadImage(inputPath)) {
-            System.out.println("Alamat tidak dapat dibaca.");
-            System.out.print("Masukkan alamat absolut gambar input: ");
+            System.out.println(color("Alamat tidak dapat dibaca.", "\u001B[31m"));
+            System.out.println();
+            System.out.print("Masukkan ");
+            System.out.print(color("alamat absolut", "\u001B[36m"));
+            System.out.print(" gambar: ");
             inputPath = scanner.nextLine();
         }
 
-        System.out.println("Pilih metode pengukuran error:");
-        System.out.println("1. Variance");
-        System.out.println("2. Mean Absolute Deviation (MAD)");
-        System.out.println("3. Max Pixel Difference");
-        System.out.println("4. Entropy");
+        System.out.println(color("╭────────────────────────────────────────────────────╮", "\u001B[34m"));
+        System.out.println(color("│", "\u001B[34m") + color("            Pilih Metode Pengukuran Error           ", "\u001B[35m") + color("│", "\u001B[34m"));
+        System.out.println(color("╰────────────────────────────────────────────────────╯", "\u001B[34m"));
+
+        System.out.println(color("   1. ", "\u001B[36m") + "Variance");
+        System.out.println(color("   2. ", "\u001B[36m") + "Mean Absolute Deviation (MAD)");
+        System.out.println(color("   3. ", "\u001B[36m") + "Max Pixel Difference");
+        System.out.println(color("   4. ", "\u001B[36m") + "Entropy");
         int methodChoice = 0;
         boolean validMethodChoiceInput = false;
         while (!validMethodChoiceInput){
-            System.out.print("Masukkan pilihan (1-4): ");
+            System.out.println();
+            System.out.print("Masukkan pilihan ");
+            System.out.print(color("(1 sampai 4)", "\u001B[36m") + ": ");
             try {
                 methodChoice = scanner.nextInt();
                 if (methodChoice >= 1 && methodChoice <= 4) {
                     validMethodChoiceInput = true;
                 } else {
-                    System.out.println("Input invalid, input harus berupa integer pada range 1 sampai 4.");
+                    System.out.println(color("Input invalid, input harus berupa integer pada range 1 sampai 4.", "\u001B[31m"));
                 }
             } catch(InputMismatchException e) {
-                System.out.println("Input invalid, input harus berupa integer pada range 1 sampai 4.");
+                System.out.println(color("Masukkan nilai integer yang valid.", "\u001B[31m"));
                 scanner.next();
             }
         }
@@ -41,16 +58,18 @@ public class Main {
         boolean validThresholdInput = false;
         double threshold = 0;
         while (!validThresholdInput) {
-            System.out.print("Masukkan threshold error: ");
+            System.out.println();
+            System.out.print("Masukkan ");
+            System.out.print(color("threshold error", "\u001B[36m") + ": ");
             try {
                 threshold = scanner.nextDouble();
                 if (threshold >= 0) {
                     validThresholdInput = true;
                 } else {
-                    System.out.println("Threshold tidak boleh negatif.");
+                    System.out.println(color("Threshold tidak boleh negatif.", "\u001B[31m"));
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Masukkan nilai double yang valid.");
+                System.out.println(color("Masukkan nilai double yang valid.", "\u001B[31m"));
                 scanner.next();
             }
         }
@@ -58,30 +77,48 @@ public class Main {
         boolean validMinBlockSizeInput = false;
         int minBlockSize = 0;
         while (!validMinBlockSizeInput){
-            System.out.print("Masukkan ukuran blok minimum: ");
+            System.out.println();
+            System.out.print("Masukkan ");
+            System.out.print(color("ukuran blok minimum", "\u001B[36m") + ": ");
             try {
                 minBlockSize = scanner.nextInt();
                 if (minBlockSize > 0) {
                     validMinBlockSizeInput = true;
                 } else {
-                    System.out.println("Input harus lebih dari nol dan berupa integer yang valid.");
+                    System.out.println(color("Input harus lebih dari nol dan berupa integer yang valid.", "\u001B[36m"));
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Input harus berupa integer yang valid.");
+                System.out.println(color("Input harus berupa integer yang valid.","\u001B[36m"));
                 scanner.next();
             }
         }
 
         scanner.nextLine();
 
-        System.out.print("Masukkan alamat absolut untuk gambar output: ");
+        System.out.println();
+        System.out.print("Masukkan ");
+        System.out.print(color("output path gambar", "\u001B[36m") + ": ");
         String outputPath = scanner.nextLine();
         String tempGifName = new File(outputPath).getName();
         String gifName = tempGifName.contains(".") ? tempGifName.substring(0, tempGifName.lastIndexOf('.')) : tempGifName;
 
-        System.out.print("Ingin menyimpan GIF proses kompresi? (y/n): ");
-        String gifChoice = scanner.nextLine().trim().toLowerCase();
-        boolean generateGIF = gifChoice.equals("y");
+        String gifChoice = "";
+        boolean generateGIF = false;
+
+        System.out.println();
+        System.out.print("Ingin menyimpan GIF proses kompresi? ");
+        System.out.print(color("(y/n)", "\u001B[36m") + ": ");
+        gifChoice = scanner.nextLine().trim().toLowerCase();
+
+        while (!gifChoice.equals("y") && !gifChoice.equals("n")) {
+                System.out.println(color("Input invalid! Masukkan hanya 'y' atau 'n'.", "\u001B[31m"));
+                System.out.println();
+                System.out.print("Ingin menyimpan GIF proses kompresi? ");
+                System.out.print(color("(y/n)", "\u001B[36m") + ": ");
+                gifChoice = scanner.nextLine().trim().toLowerCase();
+        }
+
+generateGIF = gifChoice.equals("y");
         
         Quadtree qt = new Quadtree();
         long startTime = System.nanoTime();
@@ -127,5 +164,9 @@ public class Main {
         System.out.println("Banyak simpul: " + qt.getNodeCount());
         
         scanner.close();
+    }
+
+    public static String color(String text, String colorCode) {
+        return colorCode + text + "\u001B[0m";
     }
 }

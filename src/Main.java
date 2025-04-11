@@ -79,16 +79,16 @@ public class Main {
         while (!validMinBlockSizeInput){
             System.out.println();
             System.out.print("Masukkan ");
-            System.out.print(color("ukuran blok minimum", "\u001B[31m") + ": ");
+            System.out.print(color("ukuran blok minimum", "\u001B[36m") + ": ");
             try {
                 minBlockSize = scanner.nextInt();
                 if (minBlockSize > 0) {
                     validMinBlockSizeInput = true;
                 } else {
-                    System.out.println(color("Input harus lebih dari nol dan berupa integer yang valid.", "\u001B[36m"));
+                    System.out.println(color("Input harus lebih dari nol dan berupa integer yang valid.", "\u001B[31m"));
                 }
             } catch (InputMismatchException e) {
-                System.out.println(color("Input harus berupa integer yang valid.","\u001B[36m"));
+                System.out.println(color("Input harus berupa integer yang valid.","\u001B[31m"));
                 scanner.next();
             }
         }

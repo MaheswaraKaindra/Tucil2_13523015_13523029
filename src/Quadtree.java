@@ -43,7 +43,7 @@ public class Quadtree {
                 processor.setOutputImage(stepImage);
                 reconstructUntilDepth(stepImage, root, d, 0);
 
-                String filename = String.format("../test/frames/depth_%02d.png", d);
+                String filename = String.format("test/frames/depth_%02d.png", d);
                 boolean saved = processor.saveImageFrame(filename, stepImage);
                 if (!saved) {
                     System.out.println("Gagal menyimpan frame untuk depth " + d);
